@@ -330,7 +330,11 @@ private:
   // NOTE:    This function must run in constant time.
   //          No iteration or recursion is allowed.
   static bool empty_impl(const Node *node) {
-    assert(false);
+    if (!node){
+      return true;
+      }else{
+        return false; 
+      }
   }
 
 
@@ -356,7 +360,7 @@ static int size_impl(const Node *node) {
       return 0;
     }
     else{
-     return(1 + max(height_impl(node->left), height_impl(node->right)));
+     return(1 + std::max(height_impl(node->left), height_impl(node->right)));
     }
   }
 
@@ -381,13 +385,17 @@ static int size_impl(const Node *node) {
   // NOTE:    This function must be tree recursive.
   static void destroy_nodes_impl(Node *node) {
     if(empty_impl(node)){
-      return nullptr;
-    }
-    else{
-      destroy_nodes_impl(node->left);
+      return ;
+    } else if (!(node->right && node->left)){
+      delete node; 
+    } else if (node->right && node->left){
       destroy_nodes_impl(node->right);
-      delete node;
-    }  
+      destroy_nodes_impl(node->left);
+    } else if (node->right && !node->left){
+      destroy_nodes_impl(node->right);
+    } else if (!node->right && node->left){
+      destroy_nodes_impl(node->left);
+    }
   }
 
   // EFFECTS : Searches the tree rooted at 'node' for an element equivalent
@@ -403,7 +411,16 @@ static int size_impl(const Node *node) {
   //       Two elements A and B are equivalent if and only if A is
   //       not less than B and B is not less than A.
   static Node * find_impl(Node *node, const T &query, Compare less) {
-    assert(false);
+    if (!node) {
+      return nullptr;
+    }else if(!(less(node->datum,query)) && !(less(query,node->datum))){
+      return node;
+    }else if (less(query,node->datum)){
+      return find_impl(node->left, query,less);
+    }else if(less(node->datum,query)){
+      return find_impl(node->right, query, less);
+    }
+    return nullptr;
   }
 
   // REQUIRES: item is not already contained in the tree rooted at 'node'
@@ -422,7 +439,9 @@ static int size_impl(const Node *node) {
   //       template, NOT according to the < operator. Use the "less"
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
-    assert(false);
+    if (!node){
+      
+    }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
@@ -433,7 +452,16 @@ static int size_impl(const Node *node) {
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the smallest element lives.
   static Node * min_element_impl(Node *node) {
-    assert(false);
+    Node *temp = node; 
+    if(empty_impl(node)){
+      return nullptr; 
+    }else{
+      if (temp->left){
+        temp = temp->left;
+      }else{
+        return temp; 
+      }
+    }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the maximum element
@@ -442,7 +470,16 @@ static int size_impl(const Node *node) {
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the largest element lives.
   static Node * max_element_impl(Node *node) {
-    assert(false);
+    Node *temp = node; 
+    if(empty_impl(node)){
+      return nullptr; 
+    }else{
+      if (temp->right){
+        temp = temp->right;
+      }else{
+        return temp;
+      }
+    }
   }
 
 
