@@ -365,17 +365,29 @@ static int size_impl(const Node *node) {
   //          tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static Node *copy_nodes_impl(Node *node) {
-    Node *newNode = new Node;
-    newNode->datum = node->datum; // Not sure about this
-    newNode->left = copy_nodes_impl(node->left);
-    newNode->right = copy_nodes_impl(node->right);
-    return(newNode);
+    if(empty_impl(node)){
+      return nullptr;
+    }
+    else{
+      Node *newNode = new Node;
+      newNode->datum = node->datum; // Not sure about this
+      newNode->left = copy_nodes_impl(node->left);
+      newNode->right = copy_nodes_impl(node->right);
+      return(newNode);
+    }
   }
 
   // EFFECTS: Frees the memory for all nodes used in the tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static void destroy_nodes_impl(Node *node) {
-    assert(false);
+    if(empty_impl(node)){
+      return nullptr;
+    }
+    else{
+      destroy_nodes_impl(node->left);
+      destroy_nodes_impl(node->right);
+      delete node;
+    }  
   }
 
   // EFFECTS : Searches the tree rooted at 'node' for an element equivalent
