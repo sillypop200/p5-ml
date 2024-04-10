@@ -440,8 +440,15 @@ static int size_impl(const Node *node) {
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
     if (!node){
-      
+      Node *insert = new Node {item, nullptr, nullptr};
+      node = insert; 
+      return node; 
+    } else if (less(node->datum,item)){
+      insert_impl(node->right,item,less);
+    }else if (less(item,node->datum)){
+      insert_impl(node->left,item,less);
     }
+    return node; 
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
@@ -452,16 +459,15 @@ static int size_impl(const Node *node) {
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the smallest element lives.
   static Node * min_element_impl(Node *node) {
-    Node *temp = node; 
-    if(empty_impl(node)){
+    if(!node){
       return nullptr; 
-    }else{
-      if (temp->left){
-        temp = temp->left;
-      }else{
-        return temp; 
-      }
     }
+      if (node->left){
+        min_element_impl(node->left);
+      }else{
+        return node;
+      }
+    return node; 
   }
 
   // EFFECTS : Returns a pointer to the Node containing the maximum element
@@ -470,16 +476,15 @@ static int size_impl(const Node *node) {
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the largest element lives.
   static Node * max_element_impl(Node *node) {
-    Node *temp = node; 
-    if(empty_impl(node)){
+    if(!node){
       return nullptr; 
-    }else{
-      if (temp->right){
-        temp = temp->right;
-      }else{
-        return temp;
-      }
     }
+      if (node->right){
+        max_element_impl(node->right);
+      }else{
+        return node;
+      }
+    return node;
   }
 
 
