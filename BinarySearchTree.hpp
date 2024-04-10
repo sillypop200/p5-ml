@@ -333,12 +333,18 @@ private:
     assert(false);
   }
 
+
   // EFFECTS: Returns the size of the tree rooted at 'node', which is the
   //          total number of nodes in that tree. The size of an empty
   //          tree is 0.
   // NOTE:    This function must be tree recursive.
-  static int size_impl(const Node *node) {
-    assert(false);
+static int size_impl(const Node *node) {
+    if(empty_impl(node)){
+      return 0;
+    }
+    else{
+      return(1 + size_impl(node->left) + size_impl(node->right));
+    }
   }
 
   // EFFECTS: Returns the height of the tree rooted at 'node', which is the
@@ -346,7 +352,12 @@ private:
   //          The height of an empty tree is 0.
   // NOTE:    This function must be tree recursive.
   static int height_impl(const Node *node) {
-    assert(false);
+    if(empty_impl(node)){
+      return 0;
+    }
+    else{
+     return(1 + max(height_impl(node->left), height_impl(node->right)));
+    }
   }
 
   // EFFECTS: Creates and returns a pointer to the root of a new node structure
@@ -354,7 +365,11 @@ private:
   //          tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static Node *copy_nodes_impl(Node *node) {
-    assert(false);
+    Node *newNode = new Node;
+    newNode->datum = node->datum; // Not sure about this
+    newNode->left = copy_nodes_impl(node->left);
+    newNode->right = copy_nodes_impl(node->right);
+    return(newNode);
   }
 
   // EFFECTS: Frees the memory for all nodes used in the tree rooted at 'node'.
