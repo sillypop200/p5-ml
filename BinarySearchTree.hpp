@@ -491,7 +491,19 @@ static int size_impl(const Node *node) {
   //          rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static bool check_sorting_invariant_impl(const Node *node, Compare less) {
-    assert(false);
+    if(node == nullptr){
+      return true;
+    }
+    else{
+      if(node->left != nullptr && !less(node->left->datum, node->datum)){
+        return false;
+      }
+      if(node->right != nullptr && less(node->right->datum, node->datum)){
+        return false;
+      }
+      return(check_sorting_invariant_impl(node->left, less) 
+      && check_sorting_invariant_impl(node->right, less));      
+    }
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using an in-order traversal,
@@ -502,7 +514,12 @@ static int size_impl(const Node *node) {
   //       See https://en.wikipedia.org/wiki/Tree_traversal#In-order
   //       for the definition of a in-order traversal.
   static void traverse_inorder_impl(const Node *node, std::ostream &os) {
-    assert(false);
+    if(empty_impl(node)){}
+    else{
+      traverse_inorder_impl(node->left, os);
+      os << node->datum << " ";
+      traverse_inorder_impl(node->right, os);
+    }
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using a pre-order traversal,
@@ -513,7 +530,12 @@ static int size_impl(const Node *node) {
   //       See https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
   //       for the definition of a pre-order traversal.
   static void traverse_preorder_impl(const Node *node, std::ostream &os) {
-    assert(false);
+    if(empty_impl(node)){}
+    else{
+      os << node->datum << " ";
+      traverse_preorder_impl(node->left, os);
+      traverse_preorder_impl(node->right, os);
+    }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the smallest element
@@ -539,6 +561,7 @@ static int size_impl(const Node *node) {
     } else {
       return min_greater_than_impl(node->left,val,less);
     }
+    assert(false);
   }
 
 
