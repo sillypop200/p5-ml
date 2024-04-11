@@ -549,20 +549,22 @@ static int size_impl(const Node *node) {
   // HINT: At each step, compare 'val' the the current node (using the
   //       'less' parameter). Based on the result, you gain some information
   //       about where the element you're looking for could be.
-  static Node * min_greater_than_impl(Node *node, const T &val, Compare less) {
+   static Node * min_greater_than_impl(Node *node, const T &val, Compare less) {
     if (empty_impl(node)){
       return nullptr;
     }
-    if (less(max_element_impl(node),val)){
-      return nullptr;
-    }
-    if (less(node->datum,val)){
-      return min_greater_than_impl(node->right,val,less);
-    } else {
-      return min_greater_than_impl(node->left,val,less);
-    }
-    assert(false);
+  if (less(val,node->datum)){
+      Node * check = min_greater_than_impl(node->left,val,less);
+      if (!check){
+        return node;
+      } else {
+        return check;
+      }
+    } else { // equal and datum is less than val 
+      return  min_greater_than_impl(node->right,val,less);
+    } 
   }
+
 
 
 }; // END of BinarySearchTree class
