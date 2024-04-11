@@ -413,14 +413,13 @@ static int size_impl(const Node *node) {
   static Node * find_impl(Node *node, const T &query, Compare less) {
     if (!node) {
       return nullptr;
-    }else if(!(less(node->datum,query)) && !(less(query,node->datum))){
-      return node;
     }else if (less(query,node->datum)){
       return find_impl(node->left, query,less);
     }else if(less(node->datum,query)){
       return find_impl(node->right, query, less);
+    }else{
+      return node; 
     }
-    return nullptr;
   }
 
   // REQUIRES: item is not already contained in the tree rooted at 'node'
@@ -439,16 +438,18 @@ static int size_impl(const Node *node) {
   //       template, NOT according to the < operator. Use the "less"
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
-    if (!node){
-      Node *insert = new Node {item, nullptr, nullptr};
-      node = insert; 
+    if (empty_impl(node)){
+      node = new Node {item, nullptr, nullptr};
       return node; 
     } else if (less(node->datum,item)){
-      insert_impl(node->right,item,less);
-    }else if (less(item,node->datum)){
-      insert_impl(node->left,item,less);
+      Node * insert = insert_impl(node->right,item,less);
+      node->right = insert; 
+      return node; 
+    }else {
+      Node * insert = insert_impl(node->left,item,less);
+      node->left = insert; 
+      return node; 
     }
-    return node; 
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
@@ -462,12 +463,11 @@ static int size_impl(const Node *node) {
     if(!node){
       return nullptr; 
     }
-      if (node->left){
-        min_element_impl(node->left);
-      }else{
-        return node;
-      }
-    return node; 
+    if (node->left){
+        return min_element_impl(node->left);
+    }else{
+      return node;
+    }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the maximum element
@@ -476,15 +476,14 @@ static int size_impl(const Node *node) {
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the largest element lives.
   static Node * max_element_impl(Node *node) {
-    if(!node){
+     if(empty_impl(node)){
       return nullptr; 
     }
-      if (node->right){
-        max_element_impl(node->right);
-      }else{
-        return node;
-      }
-    return node;
+    if (node->right){
+        return max_element_impl(node->right);
+    }else{
+      return node;
+    }
   }
 
 
@@ -529,7 +528,17 @@ static int size_impl(const Node *node) {
   //       'less' parameter). Based on the result, you gain some information
   //       about where the element you're looking for could be.
   static Node * min_greater_than_impl(Node *node, const T &val, Compare less) {
-    assert(false);
+    if (empty_impl(node)){
+      return nullptr;
+    }
+    if (less(max_element_impl(node),val)){
+      return nullptr;
+    }
+    if (less(node->datum,val)){
+      return min_greater_than_impl(node->right,val,less);
+    } else {
+      return min_greater_than_impl(node->left,val,less);
+    }
   }
 
 
