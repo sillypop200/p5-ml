@@ -391,10 +391,13 @@ static int size_impl(const Node *node) {
     } else if (node->right && node->left){
       destroy_nodes_impl(node->right);
       destroy_nodes_impl(node->left);
+      delete node; 
     } else if (node->right && !node->left){
       destroy_nodes_impl(node->right);
+      delete node; 
     } else if (!node->right && node->left){
       destroy_nodes_impl(node->left);
+      delete node;
     }
   }
 

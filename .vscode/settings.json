@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "__node_handle": "cpp"
+        "__node_handle": "cpp",
+        "deque": "cpp",
+        "functional": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp"
     }
 }
