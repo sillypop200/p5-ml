@@ -6,7 +6,7 @@ using namespace std;
 
 
 TEST(bst_public_test) {
-
+    BinarySearchTree<int> tree; 
   tree.insert(5);
 
   ASSERT_TRUE(tree.size() == 1);
