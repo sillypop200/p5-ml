@@ -33,7 +33,11 @@ private:
   // A custom comparator
   class PairComp {
     public:
-      // bool operator()...
+     bool operator()(Pair_type pair1, Pair_type pair2){
+        return compare(pair1.first,pair2.first);
+     }
+    private: 
+      Key_compare compare; 
   };
 
 public:
@@ -60,17 +64,29 @@ public:
   // If these operations will work correctly without defining them,
   // you should omit them. A user of the class must be able to create,
   // copy, assign, and destroy Maps.
-
+  Map () {} // default constrcutor ?? 
+  Map (const Map &other):
+  entries (other.entries){
+    
+  } // copy constructor 
+  //dont need destructor, BST has  
+   Map &operator=(const Map &rhs) {
+    if (this == &rhs) {
+      return *this;
+    }
+    this->entries= (rhs.entries); 
+    return *this;
+  }
 
   // EFFECTS : Returns whether this Map is empty.
   bool empty() const{
-    return this.empty() //am i allowed
+    return entries.empty(); //am i allowed
   }
 
   // EFFECTS : Returns the number of elements in this Map.
   // NOTE : size_t is an integral type from the STL
   size_t size() const{
-    return this.size();
+    return entries.size();
   }
 
   // EFFECTS : Searches this Map for an element with a key equivalent
@@ -81,7 +97,8 @@ public:
   //       (key, value) pairs, you'll need to construct a dummy value
   //       using "Value_type()".
   Iterator find(const Key_type& k) const{
-    assert(false);
+    Pair_type sheesh {k,Value_type()};
+    return entries.find(sheesh);
   }
 
   // MODIFIES: this
@@ -101,34 +118,48 @@ public:
   //
   // HINT: http://www.cplusplus.com/reference/map/map/operator[]/
   Value_type& operator[](const Key_type& k){
-    assert(false);
+   Pair_type sheesh {k,Value_type()};
+   if(find(k) == end()){
+    Iterator help = entries.insert(sheesh); // Maybe not we'll see
+    return (*help).second; 
+   }
+   else{
+    Iterator output = find(k);
+    return (*output).second; 
+   }
   }
 
   // MODIFIES: this
   // EFFECTS : Inserts the given element into this Map if the given key
-  //           is not already contained in the Map. If the key is
+  //           is not   contained in the Map. If the key is
   //           already in the Map, returns an iterator to the
   //           corresponding existing element, along with the value
   //           false. Otherwise, inserts the given element and returns
   //           an iterator to the newly inserted element, along with
   //           the value true.
   std::pair<Iterator, bool> insert(const Pair_type &val){
-    assert(false);
-  }
+    if(entries.find(val) == entries.end()){ // not in this thing 
+      Iterator help = entries.insert(val);
+      return{help, true};
+    }else {
+      Iterator meep = entries.find(val);
+      return  {meep,false};
+    }
+  } 
 
   // EFFECTS : Returns an iterator to the first key-value pair in this Map.
   Iterator begin() const{
-    assert(false);
+    return entries.begin();
   }
 
   // EFFECTS : Returns an iterator to "past-the-end".
   Iterator end() const{
-    assert(false);
+    return entries.end();
   }
 
 private:
-  Key_type key;
-  Value_type value;
+  BinarySearchTree<Pair_type, PairComp> entries; 
+  PairComp comparepair; 
   // Add a BinarySearchTree private member HERE.
 };
 

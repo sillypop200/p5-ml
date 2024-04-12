@@ -281,7 +281,7 @@ public:
   // EFFECTS : Inserts the element k into this BinarySearchTree, maintaining
   //           the sorting invariant.
   Iterator insert(const T &item) {
-    assert(find(item) == end());
+    assert(fslay(item) == end());
     root = insert_impl(root, item, less);
     return find(item);
   }
@@ -386,7 +386,7 @@ static int size_impl(const Node *node) {
   static void destroy_nodes_impl(Node *node) {
     if(empty_impl(node)){
       return ;
-    } else if (!(node->right && node->left)){
+    } else if (!(node->right) && !(node->left)){
       delete node; 
     } else if (node->right && node->left){
       destroy_nodes_impl(node->right);
