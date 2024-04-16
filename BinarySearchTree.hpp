@@ -84,7 +84,7 @@ private:
 
 public:
 
-  // Default constructor
+  // Default constructors
   // (Note this will default construct the less comparator)
   BinarySearchTree()
     : root(nullptr) { }
