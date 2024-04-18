@@ -12,6 +12,7 @@
         "__hash_table": "cpp",
         "__tree": "cpp",
         "string_view": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "*.tcc": "cpp"
     }
 }
