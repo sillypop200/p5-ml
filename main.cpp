@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <set>
 #include "csvstream.hpp" 
 using namespace std;
 
@@ -10,6 +11,7 @@ private:
     bool debug; // 1 is debug 0 is don't debug 
     int numPosts;
     int uniqueWords; 
+    bool samePost = false;
     map <string,int> numPostsContainingWord; 
     map <string,int> numPostsWithLabel;
     map <pair<string,string>, int> numPostWithLabelThatContainsWord;
@@ -23,21 +25,67 @@ public:
             cout << input << endl; 
         }
     }
+
+    set<string> unique_words(const string &str) {
+    istringstream source(str);
+    set<string> words;
+    string word;
+    while (source >> word) {
+        words.insert(word);
+    }
+    return words;
+    }
+
     void train (csvstream& stream){
         print ("training data:"); 
         map<string,string> row;  
         while (stream >> row){
             ++numPosts;
             print ("  label = " + row["tag"] + ", content = "+ row["content"]);
-            
+            set<string> words = unique_words(row["content"]);
+             // adding the num of posts to label 
+            string label = row["tag"];
+            pair<std::map<string,int>::iterator, bool> pairchild;
+            pair<string, int> pary;
+            pary.first = label;
+            pary.second = 1;
+            pairchild = numPostsWithLabel.insert(pary);
+            if(!pairchild.second){
+                ++(*pairchild.first).second;
+            }
+            // num unique words totall 
+            for(string single : words){
+                pair<string, int> parry;
+                parry.first = single;
+                parry.second = 1;
+                pair<std::map<string,int>::iterator, bool> pared;
+                pared = numPostsContainingWord.insert(parry);
+                if(!pared.second){
+                    ++(*pared.first).second;
+                }
+                
+                pair<string,string> yummy; 
+                yummy.first = label; 
+                yummy.second = single; 
+                pair<pair<string,string>,int> inserter; 
+                pair<std::map<pair<string,string>,int>::iterator, bool> banana;
+                banana = numPostWithLabelThatContainsWord.insert(inserter);
+                if(!banana.second){
+                    ++(*banana.first).second;
+                }
+        }
+    uniqueWords = numPostsContainingWord.size();
+    cout << "trained on " << to_string(numPosts) << " examples" << endl;
+        print ("vocabulary size = " + to_string(uniqueWords));
+    }
+
+
+
+
 
 
 
     
-        }
-        cout << "trained on " << to_string(numPosts) << " examples" << endl;
-        print ("vocabulary size = " + to_string(uniqueWords));
-    }
 };
 int main(int argc, char * argv []) {
     cout.precision(3); 
@@ -56,30 +104,6 @@ int main(int argc, char * argv []) {
     }
     csvstream csvinput(input);
     
-    map<string,string> row; 
-    int postCount = 0; 
-    int uniqueWords = 0; 
-    map <string,int> numPostsContainingWord; 
-    map <string,int> numPostsWithLabel;
-    map <pair<string,string>, int> numPostWithLabelThatContainsWord;
-    while (csvinput >> row){
-      ++postCount;
-        
-
-    }
-    
-    int n; 
-    int unique_views; 
-    string tag; 
-    string content = "slay"; 
-    char comma;
-    int total = 0;
-    int posts = -1;
-    int total;
-    bool samePost = false;
-    map<string, int> word_posts; 
-    map<string, int> label_posts; 
-    map<pair<string, string>,int> labelword_posts;
-    map<string,int>::iterator it;
+   
 
 }
