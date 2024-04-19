@@ -11,7 +11,6 @@ private:
     bool debug; // 1 is debug 0 is don't debug 
     int numPosts;
     int uniqueWords; 
-    bool samePost = false;
     map <string,int> numPostsContainingWord; 
     map <string,int> numPostsWithLabel;
     map <pair<string,string>, int> numPostWithLabelThatContainsWord;
@@ -43,6 +42,7 @@ public:
             ++numPosts;
             print ("  label = " + row["tag"] + ", content = "+ row["content"]);
             set<string> words = unique_words(row["content"]);
+
              // adding the num of posts to label 
             string label = row["tag"];
             pair<std::map<string,int>::iterator, bool> pairchild;
@@ -79,6 +79,11 @@ public:
         print ("vocabulary size = " + to_string(uniqueWords));
     }
 
+    // For each word in set
+    // string word;
+    // pair<std::map<string,int>::iterator, bool> findingWord;
+    // findingWord = numPostsContainingWord.find(word);
+    // if()
 
 
 
