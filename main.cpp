@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include "csvstream.hpp" 
+#include <cmath>
 using namespace std;
 
 class Classifier {
@@ -80,40 +81,83 @@ public:
         print ("vocabulary size = " + to_string(uniqueWords));
         classPrint();
     }
+    
     void classPrint(){
         print("classes: ");
         std::map<string,int>::iterator help = numPostsWithLabel.begin();
         for (;help != numPostsWithLabel.end(); ++help){
-            print((*help).first+", "+to_string((*help).second) + 
-            " examples, log-prior = "+logPrior((*help).second));
+            print("  "+(*help).first+", "+to_string((*help).second) + 
+            " examples, log-prior = "+ logPrior((*help).second));
         }
         print("classifier parameters: ");
         std::map<pair<string,string>,int>::iterator yumm = numPostWithLabelThatContainsWord.begin();
         for (; yumm!=numPostWithLabelThatContainsWord.end();++yumm){
-            print((*yumm).first.first+":"+(*yumm).first.second+
+            print("  "+(*yumm).first.first+":"+(*yumm).first.second+
             ", count = "+to_string((*yumm).second)+", log-likelihood = "+
-            logLikelihood((*yumm).first.first,(*yumm).second));
+            logLikelihood((*yumm).first.first,(*yumm).second,(*yumm).first.second));
         }
     }
     string logPrior(int second){
         return to_string(log(second/numPosts));
     }
-    string logLikelihood(string help, int second){
-        int lover = numPostsWithLabel[help];
+    string logLikelihood(string label, int second, string word){
+        pair<string,string> stringy; 
+        stringy.first = label;
+        stringy.second = word;
+        std::map<pair<string,string>,int>::iterator silly;
+        std::map<string,int>::iterator goose;
+        silly = numPostWithLabelThatContainsWord.find(stringy);
+        if(silly == numPostWithLabelThatContainsWord.end()){
+            goose = numPostsContainingWord.find(word);
+            if (goose == numPostsContainingWord.end()){
+                return to_string(log(1/numPosts));
+            }
+            else{
+                return to_string(log((*goose).second/numPosts));
+            }
+        }   
+        int lover = numPostsWithLabel[label];    
         int baby = log(second/lover);
         return to_string(baby);
     }
-    void classify(istream& inserting){
-
+    pair<string,double> predict(set<string>& words){
+        int score = -100000;
+        string rishi; 
+        std::map<string,int>::iterator yum = numPostsWithLabel.begin();
+        for (;yum!=numPostsWithLabel.end();++yum){
+            double runningTot = 0;
+            double logpc = stod(logPrior((*yum).second));
+            for (string single : words){      
+                runningTot += stod(logLikelihood((*yum).first, (*yum).second, single));    
+            }
+            runningTot += logpc; 
+            if (runningTot>score){
+                rishi = (*yum).first; 
+                score = runningTot; 
+            }
+        }
+        return {rishi,score}; 
     }
-    // For each word in set
-    // string word;
-    // pair<std::map<string,int>::iterator, bool> findingWord;
-    // findingWord = numPostsContainingWord.find(word);
-    // if()
-    
+    void classify(csvstream& stream){
+        cout << "test data:"<<endl;
+        int num = 0; 
+        int all = 0;
+        map<string,string> row;
+        while (stream >> row){
+            set<string> words = unique_words(row["content"]);
+            pair<string,double> mommy;
+            mommy = predict(words);
+            cout << "correct = " << row["tag"] << ", predicted = "<< mommy.first 
+            << ", log-probability score = " << mommy.second<<endl;
+            cout <<"content = " << row["content"] << endl << endl;
+            if (row["tag"] == mommy.first){
+                ++num;
+            }
+            all++;
+        }
+        cout << "probablity: " << num << " / " << all << " posts predicted correctly" << endl;
+    }
 
-    
 };
 int main(int argc, char * argv []) {
     cout.precision(3); 
@@ -121,9 +165,12 @@ int main(int argc, char * argv []) {
         cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
         return -1; // 69
     }
-    if (argv[3] != "--debug"){
-        cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
-        return -1; // 420
+    if (argc == 4){
+        string geo = argv[3]; 
+        if (geo != "--debug"){
+            cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
+            return -1; // 420
+        }
     }
     ifstream input(argv[1]);
     if(!input.is_open()){
