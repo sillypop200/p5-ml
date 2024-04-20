@@ -79,6 +79,9 @@ public:
       uniqueWords = numPostsContainingWord.size();
     cout << "trained on " << to_string(numPosts) << " examples" << endl;
         print ("vocabulary size = " + to_string(uniqueWords));
+        if (debug){
+            cout<<endl;
+        }
         classPrint();
     }
     
@@ -96,9 +99,13 @@ public:
             ", count = "+to_string((*yumm).second)+", log-likelihood = "+
             logLikelihood((*yumm).first.first,(*yumm).second,(*yumm).first.second));
         }
+        if (debug){
+            cout<<endl;
+        }
     }
     string logPrior(int second){
-        return to_string(log(second/numPosts));
+        double quo = second;
+        return to_string(log(quo/numPosts));
     }
     string logLikelihood(string label, int second, string word){
         pair<string,string> stringy; 
@@ -110,10 +117,12 @@ public:
         if(silly == numPostWithLabelThatContainsWord.end()){
             goose = numPostsContainingWord.find(word);
             if (goose == numPostsContainingWord.end()){
-                return to_string(log(1/numPosts));
+                double baby = 1/numPosts;
+                return to_string(log(baby));
             }
             else{
-                return to_string(log((*goose).second/numPosts));
+                double vaneesha = (*goose).second/numPosts;
+                return to_string(log(vaneesha));
             }
         }   
         int lover = numPostsWithLabel[label];    
@@ -148,7 +157,7 @@ public:
             pair<string,double> mommy;
             mommy = predict(words);
             cout << "correct = " << row["tag"] << ", predicted = "<< mommy.first 
-            << ", log-probability score = " << mommy.second<<endl;
+            << ", log-probability score = " << mommy.second <<endl;
             cout <<"content = " << row["content"] << endl << endl;
             if (row["tag"] == mommy.first){
                 ++num;
@@ -160,7 +169,7 @@ public:
 
 };
 int main(int argc, char * argv []) {
-    cout.precision(3); 
+    cout.precision(3);
     if (argc != 3 && argc != 4){
         cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
         return -1; // 69
@@ -187,7 +196,8 @@ int main(int argc, char * argv []) {
     int katie = 0; 
     if (argc==3){
         katie =0 ; 
-    }else{
+    }
+    else{
         katie =1; 
     }
     Classifier conner (katie);
