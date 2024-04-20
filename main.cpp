@@ -167,10 +167,11 @@ public:
                 shawty.second=single;
                 std::map<pair<string,string>,int>::iterator mom; 
                 mom = numPostWithLabelThatContainsWord.find(shawty); // cant insert 
+                int rolling = (*mom).second;
                 if (mom==numPostWithLabelThatContainsWord.end()){
-                    (*mom).second =0;
+                    rolling = 0;
                 }
-                runningTot += logLikelihood((*yum).first, (*mom).second, single); 
+                runningTot += logLikelihood((*yum).first, rolling, single); 
             }
             if (runningTot>score){
                 rishi = (*yum).first; 
@@ -228,7 +229,7 @@ int main(int argc, char * argv []) {
     csvstream meep(in);
     int katie = 0; 
     if (argc==3){
-        katie =0 ; 
+        katie = 0 ; 
     }
     else{
         katie =1; 
@@ -236,4 +237,6 @@ int main(int argc, char * argv []) {
     Classifier conner (katie);
     conner.train(csvinput);
     conner.classify(meep);
+    input.close();
+    in.close();
 }
