@@ -18,14 +18,18 @@ private:
 public: 
     Classifier (bool debug) 
     : debug (debug), numPosts (0),uniqueWords(0){
-
     } 
     void print (string input ){
+        cout.precision(3);
         if (debug){
-            cout << input << endl; 
+            cout << input ; 
         }
     }
-
+    void endlprint(){
+        if (debug){
+        cout << endl; 
+        }
+    }
     set<string> unique_words(const string &str) {
     istringstream source(str);
     set<string> words;
@@ -37,13 +41,15 @@ public:
     }
 
     void train (csvstream& stream){
+        cout.precision(3);
         print ("training data:"); 
+        endlprint();
         map<string,string> row;  
         while (stream >> row){
             ++numPosts;
             print ("  label = " + row["tag"] + ", content = "+ row["content"]);
+            endlprint();
             set<string> words = unique_words(row["content"]);
-
              // adding the num of posts to label 
             string label = row["tag"];
             pair<std::map<string,int>::iterator, bool> pairchild;
@@ -69,6 +75,8 @@ public:
                 yummy.first = label; 
                 yummy.second = single; 
                 pair<pair<string,string>,int> inserter; 
+                inserter.first = yummy;
+                inserter.second =1; 
                 pair<std::map<pair<string,string>,int>::iterator, bool> banana;
                 banana = numPostWithLabelThatContainsWord.insert(inserter);
                 if(!banana.second){
@@ -79,6 +87,7 @@ public:
       uniqueWords = numPostsContainingWord.size();
     cout << "trained on " << to_string(numPosts) << " examples" << endl;
         print ("vocabulary size = " + to_string(uniqueWords));
+        cout << endl;
         if (debug){
             cout<<endl;
         }
@@ -86,60 +95,82 @@ public:
     }
     
     void classPrint(){
-        print("classes: ");
+        cout.precision(3);
+        print("classes: "); 
+        endlprint();
         std::map<string,int>::iterator help = numPostsWithLabel.begin();
         for (;help != numPostsWithLabel.end(); ++help){
             print("  "+(*help).first+", "+to_string((*help).second) + 
-            " examples, log-prior = "+ logPrior((*help).second));
+            " examples, log-prior = " );
+            if (debug){cout <<logPrior((*help).second);}
+            endlprint();
         }
         print("classifier parameters: ");
+        endlprint();
         std::map<pair<string,string>,int>::iterator yumm = numPostWithLabelThatContainsWord.begin();
         for (; yumm!=numPostWithLabelThatContainsWord.end();++yumm){
             print("  "+(*yumm).first.first+":"+(*yumm).first.second+
-            ", count = "+to_string((*yumm).second)+", log-likelihood = "+
-            logLikelihood((*yumm).first.first,(*yumm).second,(*yumm).first.second));
+            ", count = "+to_string((*yumm).second)+", log-likelihood = ");
+            if (debug){
+               cout <<logLikelihood((*yumm).first.first,(*yumm).second,(*yumm).first.second) ;
+            }
+            endlprint();
         }
         if (debug){
             cout<<endl;
         }
     }
-    string logPrior(int second){
+    double logPrior(int second){
         double quo = second;
-        return to_string(log(quo/numPosts));
+        double dividend = quo/numPosts;
+        return log(dividend);
     }
-    string logLikelihood(string label, int second, string word){
+    double logLikelihood(string label, int bonnie, string word){
         pair<string,string> stringy; 
         stringy.first = label;
         stringy.second = word;
         std::map<pair<string,string>,int>::iterator silly;
         std::map<string,int>::iterator goose;
         silly = numPostWithLabelThatContainsWord.find(stringy);
-        if(silly == numPostWithLabelThatContainsWord.end()){
+        if(bonnie==0){
             goose = numPostsContainingWord.find(word);
             if (goose == numPostsContainingWord.end()){
-                double baby = 1/numPosts;
-                return to_string(log(baby));
+                double baby = 1.0/numPosts; 
+                return log(baby);
             }
             else{
-                double vaneesha = (*goose).second/numPosts;
-                return to_string(log(vaneesha));
+                double store = (*goose).second; 
+                double vaneesha = store/numPosts;
+                return log(vaneesha);
             }
         }   
-        int lover = numPostsWithLabel[label];    
-        int baby = log(second/lover);
-        return to_string(baby);
+        cout.precision(3);
+        int lover = numPostsWithLabel[label]; 
+        double george = bonnie;   
+        setprecision(3);
+        double baby = log(george/lover);
+        return baby;
     }
     pair<string,double> predict(set<string>& words){
-        int score = -100000;
-        string rishi; 
+        cout.precision(3);
+        double score = -10000.0;
         std::map<string,int>::iterator yum = numPostsWithLabel.begin();
+        string rishi = (*yum).first;
         for (;yum!=numPostsWithLabel.end();++yum){
-            double runningTot = 0;
-            double logpc = stod(logPrior((*yum).second));
+            double runningTot = 0.0;
+            double logpc = logPrior((*yum).second); // not the problem 
+            runningTot = runningTot + logpc;
             for (string single : words){      
-                runningTot += stod(logLikelihood((*yum).first, (*yum).second, single));    
+                pair<string,string> shawty;
+                shawty.first= (*yum).first;
+                shawty.second=single;
+                std::map<pair<string,string>,int>::iterator mom; 
+                mom = numPostWithLabelThatContainsWord.find(shawty); // cant insert 
+                if (mom==numPostWithLabelThatContainsWord.end()){
+                    (*mom).second =0;
+                }
+                runningTot += logLikelihood((*yum).first, (*mom).second, single); 
             }
-            runningTot += logpc; 
             if (runningTot>score){
                 rishi = (*yum).first; 
                 score = runningTot; 
@@ -148,6 +179,7 @@ public:
         return {rishi,score}; 
     }
     void classify(csvstream& stream){
+        cout.precision(3);
         cout << "test data:"<<endl;
         int num = 0; 
         int all = 0;
@@ -156,15 +188,15 @@ public:
             set<string> words = unique_words(row["content"]);
             pair<string,double> mommy;
             mommy = predict(words);
-            cout << "correct = " << row["tag"] << ", predicted = "<< mommy.first 
+            cout << "  correct = " << row["tag"] << ", predicted = "<< mommy.first 
             << ", log-probability score = " << mommy.second <<endl;
-            cout <<"content = " << row["content"] << endl << endl;
-            if (row["tag"] == mommy.first){
+            cout <<"  content = " << row["content"] << endl << endl;
+            if (row["tag"] == mommy.first){ // works 
                 ++num;
             }
-            all++;
+            all++; // works 
         }
-        cout << "probablity: " << num << " / " << all << " posts predicted correctly" << endl;
+        cout << "performance: " << num << " / " << all << " posts predicted correctly" << endl;
     }
 
 };
