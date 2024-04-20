@@ -96,7 +96,7 @@ public:
     
     void classPrint(){
         cout.precision(3);
-        print("classes: "); 
+        print("classes:"); 
         endlprint();
         std::map<string,int>::iterator help = numPostsWithLabel.begin();
         for (;help != numPostsWithLabel.end(); ++help){
@@ -105,14 +105,16 @@ public:
             if (debug){cout <<logPrior((*help).second);}
             endlprint();
         }
-        print("classifier parameters: ");
+        print("classifier parameters:");
         endlprint();
-        std::map<pair<string,string>,int>::iterator yumm = numPostWithLabelThatContainsWord.begin();
+        std::map<pair<string,string>,int>::iterator yumm 
+        = numPostWithLabelThatContainsWord.begin();
         for (; yumm!=numPostWithLabelThatContainsWord.end();++yumm){
             print("  "+(*yumm).first.first+":"+(*yumm).first.second+
             ", count = "+to_string((*yumm).second)+", log-likelihood = ");
             if (debug){
-               cout <<logLikelihood((*yumm).first.first,(*yumm).second,(*yumm).first.second) ;
+                string a = (*yumm).first.first;
+                cout<<logLikelihood(a,(*yumm).second,(*yumm).first.second);
             }
             endlprint();
         }
@@ -147,7 +149,6 @@ public:
         cout.precision(3);
         int lover = numPostsWithLabel[label]; 
         double george = bonnie;   
-        setprecision(3);
         double baby = log(george/lover);
         return baby;
     }
@@ -196,7 +197,7 @@ public:
             }
             all++; // works 
         }
-        cout << "performance: " << num << " / " << all << " posts predicted correctly" << endl;
+        cout<<"performance: "<<num<<" / "<<all<<" posts predicted correctly"<<endl;
     }
 
 };
