@@ -167,9 +167,11 @@ public:
                 shawty.second=single;
                 std::map<pair<string,string>,int>::iterator mom; 
                 mom = numPostWithLabelThatContainsWord.find(shawty); // cant insert 
-                int rolling = (*mom).second;
+                int rolling;
                 if (mom==numPostWithLabelThatContainsWord.end()){
                     rolling = 0;
+                }else {
+                    rolling = (*mom).second;
                 }
                 runningTot += logLikelihood((*yum).first, rolling, single); 
             }
