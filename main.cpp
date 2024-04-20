@@ -177,8 +177,20 @@ int main(int argc, char * argv []) {
         cout << "Error opening file: " <<  argv[1] << endl;
         return -1;
     }
+    ifstream in(argv[2]);
+    if(!in.is_open()){
+        cout << "Error opening file: " <<  argv[1] << endl;
+        return -1;
+    }
     csvstream csvinput(input);
-    
-   
-
+    csvstream meep(in);
+    int katie = 0; 
+    if (argc==3){
+        katie =0 ; 
+    }else{
+        katie =1; 
+    }
+    Classifier conner (katie);
+    conner.train(csvinput);
+    conner.classify(meep);
 }
